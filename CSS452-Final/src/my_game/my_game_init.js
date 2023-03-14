@@ -15,7 +15,7 @@ class MyGame extends engine.Scene {
         this.kTrans = "assets/transparency.png";
 
         //Load resources 1
-        this.kBg = "assets/bg_1.png";
+        this.kBg = "assets/gameBg_1.png";
         this.kAvatar = "assets/avatar_1.png";
         this.kTextBg = "assets/dialogueFrame_1.png";
         this.kNameBg = "assets/dialogueFrame_1.png";
@@ -23,7 +23,7 @@ class MyGame extends engine.Scene {
         this.kDialogueText = "Welcome to the world of Qi.";
 
        //Load resources 2
-       this.kBg2 = "assets/bg_2.png";
+       this.kBg2 = "assets/gameBg_2.jpg";
        this.kAvatar2 = "assets/avatar_2.png";
        this.kTextBg2 = "assets/dialogueFrame_2.png";
        this.kNameBg2 = "assets/dialogueFrame_2.png";
@@ -44,12 +44,6 @@ class MyGame extends engine.Scene {
         // Init main camera
         this.mCamera = null;
 
-        //Init dialogue counter
-        this.mCounter = 0;
-
-        //Init transparency
-        this.mTrans = null;
-
         //Init dialogue system 1
         this.mBg = null;
         this.mAvatar = null;
@@ -58,39 +52,12 @@ class MyGame extends engine.Scene {
         this.mDialogueText = null;
         this.mNameText = null;
 
-        this.mDialogue = null;
-
-        //Init dialogue system 2
-        this.mBg2 = null;
-        this.mAvatar2 = null;
-        this.mTextBg2 = null;
-        this.mNameBg2 = null;
-        this.mDialogueText2 = null;
-        this.mNameText2 = null;        
-        
-        this.mDialogue2 = null;
-
-        //Init dialogue system 3
-        this.mBg3 = null;
-        this.mAvatar3 = null;
-        this.mTextBg3 = null;
-        this.mNameBg3 = null;
-        this.mDialogueText3 = null;
-        this.mNameText3 = null;        
-        
-        this.mDialogue3 = null;        
-
         //Init dialogue system set
-        this.mDialogueSet = [];
         this.mDialogSet = [];
         this.mCurDialog = null;
         this.mOptionSet = [];
         this.mOption = null;
         
-        this.mAttack = null;
-        this.mDefend = null;
-        this.mHealth = null;
-        this.mQi = null;
         this.mPropertyAttribute = [];
         this.mProperty = [];
         this.mPropertyRenderable = [];
@@ -181,11 +148,10 @@ class MyGame extends engine.Scene {
             this.mProperty[i] = sceneFile.Property[i].Value;
             let str = this.mPropertyAttribute[i] + ": " + this.mProperty[i];
             this.mPropertyRenderable[i] = new engine.FontRenderable(str);
-            this.mPropertyRenderable[i].setColor([1, 0, 0, 1]);
+            this.mPropertyRenderable[i].setColor([1, 0, 1, 1]);
             this.mPropertyRenderable[i].getXform().setPosition(140, 95-5*i);
             this.mPropertyRenderable[i].setTextHeight(3);
         }
-        console.log(this.mPropertyAttribute, this.mProperty);
         for (let i = 0; i < sceneFile.SceneSet.length; i++) {
             let dialogInfo = sceneFile.SceneSet[i].Dialog;
             let dialog = new engine.Dialog();
@@ -193,14 +159,14 @@ class MyGame extends engine.Scene {
             dialog.setBackgroundTexture(dialogInfo.DialogTexture);
             dialog.setAvatar(dialogInfo.AvatarTexture);
             dialog.setName(dialogInfo.NameString);
-            // console.log(info.DialogText);
             dialog.setParagraph(dialogInfo.DialogText);
+            if (dialogInfo.hasOwnProperty("EndTag"))
+                dialog.setEndTag(true);
             this.mDialogSet.push(dialog);
 
             if (sceneFile.SceneSet[i].hasOwnProperty("Option")) {
                 let optionInfo = sceneFile.SceneSet[i].Option;
                 let layout = optionInfo.Layout === "Vertical" ? true : false;
-                console.log(layout);
                 let options = [];
                 for (let j = 0; j < optionInfo.Content.length; j++) {
                     let delta = optionInfo.Spacing;
@@ -208,22 +174,17 @@ class MyGame extends engine.Scene {
                     let width = optionInfo.Position[1];
                     let vp = optionInfo.Position[2];
                     let _vp = [...vp];
-                    console.log(vp);
                     if (layout) {
-                        // console.log(vp[1],"-", j,"*",delta);
                         _vp[1] = vp[1] - (j * delta);
                     }
                     else 
                         _vp[0] = vp[0] + (j * delta);
-                    // console.log(optionInfo.Content[j].Tag);
-                    console.log(j, _vp);
                     let op = new engine.Option();
                     op.init(center, width, _vp);
                     op.setBackgroundTexture(this.kTextBg);
                     op.setParagraph(optionInfo.Content[j].Tag);
                     op.setExecute(optionInfo.Content[j].Execute);
                     options.push(op);
-                    // console.log(op);
                 }
                 if (optionInfo.Relationship === "Together") {
                     for (let j = 0; j < options.length; j++)
@@ -236,24 +197,6 @@ class MyGame extends engine.Scene {
         }
     }
 
-
-       // _parseDialogues(sceneInfo){
-    //     let i;
-    //     let dialogueSet = [];
-
-    //     for(i = 0; i< sceneInfo.DialogueSet.length; i++){
-    //         dialogueSet[i] = new engine.Dialogue(this.kBg, this.kAvatar, this.kTextBg, this.kNameText, this.kDialogueText);
-
-    //         dialogueSet[i].setLargeBg(sceneInfo.DialogueSet[i].LargeBg);
-    //         dialogueSet[i].setAvatar(sceneInfo.DialogueSet[i].Avatar);
-    //         dialogueSet[i].setTextBg(sceneInfo.DialogueSet[i].TextBg);
-    //         dialogueSet[i].setNameBg(sceneInfo.DialogueSet[i].NameBg);
-    //         dialogueSet[i].setNameText(sceneInfo.DialogueSet[i].NameText);
-    //         dialogueSet[i].setDialogueText(sceneInfo.DialogueSet[i].DialogueText[0], sceneInfo.DialogueSet[i].DialogueText[1], sceneInfo.DialogueSet[i].DialogueText[2]);
-
-    //         this.mDialogueSet.push(dialogueSet[i]);
-    //     }
-    // }
 }
 
 export default MyGame;

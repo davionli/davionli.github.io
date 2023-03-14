@@ -10,6 +10,7 @@ class Dialog {
         this.mAvatar = null;
         this.mTextRenderable = null;
         this.mNextDialog = null;
+        this.mHasEndTag = false;
     }
 
     init(dc) {
@@ -29,13 +30,13 @@ class Dialog {
 
 
         // Name Camera
-        let px = 200;
+        let px = 300;
         let gap = 10;
         let btltX = vp[0], btltY = vp[1] + vp[3] + gap;
 
         this.mNameCam = new engine.Camera( 
             vec2.fromValues(0, 0),
-            px / (vp[2] / width),
+            px / 15,
             [btltX, btltY, px, 80]
         );
         this.mNameCam.setBackgroundColor[0, 0, 0, 1];
@@ -57,7 +58,8 @@ class Dialog {
     update(myGame) {
         this.mTextRenderable.update();
         if(engine.input.isButtonClicked(engine.input.eMouseButton.eLeft)) {
-            if (this.mDialogCam.isMouseInViewport() && myGame.mCurDialog < myGame.mDialogSet.length-1) {
+            if (this.mDialogCam.isMouseInViewport() && myGame.mCurDialog < myGame.mDialogSet.length - 1
+            && myGame.mOptionSet[myGame.mCurDialog] === null && !this.mHasEndTag) {
                 myGame.mCurDialog++;
             }
         }
@@ -71,10 +73,14 @@ class Dialog {
 
     setName(name) {
         // A font renderable for displaying avatar name
+        let textHeight = 2;
         this.mNameRenderable = new engine.FontRenderable(name);
-        this.mNameRenderable.setTextHeight(2);
+        this.mNameRenderable.setTextHeight(textHeight);
         this.mNameRenderable.setColor([1, 1, 1, 1]);
-        this.mNameRenderable.getXform().setPosition(0, 0);
+        let nameWCLen = this.mNameRenderable.getStringWidth();
+        this.mNameRenderable.getXform().setPosition(0 - nameWCLen/2, 0);
+        
+        this.resizeNameTexture();
     }
 
     setNameTexture(tex) {
@@ -83,15 +89,19 @@ class Dialog {
         this.mNameBg.getXform().setSize(this.mNameCam.getWCWidth(), this.mNameCam.getWCHeight());
     }
 
+    resizeNameTexture() {
+        this.mNameBg.getXform().setPosition(this.mNameCam.getWCCenter()[0], this.mNameCam.getWCCenter()[1]);
+        this.mNameBg.getXform().setSize(this.mNameCam.getWCWidth(), this.mNameCam.getWCHeight());
+    }
+
     setBackgroundTexture(bgTex) {
         this.mCamBg = new engine.TextureRenderable(bgTex); 
         this.mCamBg.getXform().setPosition(this.mDialogCam.getWCCenter()[0], this.mDialogCam.getWCCenter()[1]);
         this.mCamBg.getXform().setSize(this.mDialogCam.getWCWidth(), this.mDialogCam.getWCHeight());
-
         this.setNameTexture(bgTex);
     }
 
-    
+    setEndTag(b) { this.mHasEndTag = b; }
     
     setParagraph(p) {
         this.mTextRenderable = new engine.ParagraphRenderable(p);

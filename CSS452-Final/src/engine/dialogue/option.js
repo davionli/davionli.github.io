@@ -6,8 +6,8 @@ class Option {
         this.mOptionCam = null;
         this.mTextRenderable = null;
         this.mCamBg = null;
-        this.mFuncName = null;
-        this.mArguments = null;
+        this.mFuncName = [];
+        this.mArguments = [];
         this.mAllowedClicked = null;
         this.mOptionGroup = null;
     }
@@ -23,6 +23,13 @@ class Option {
         );
         this.mOptionCam.setBackgroundColor([1, 1, 0, 1]);
         this.mAllowedClicked = 1;
+    }
+
+    setExecute(ex) {
+        for (let i = 0; i < ex.length; i++) {
+            this.mFuncName.push(ex[i][0]);
+            this.mArguments.push(ex[i][1]);
+        }
     }
 
     draw() {
@@ -48,12 +55,10 @@ class Option {
     }
 
     execute(myGame) {
-        let command = "this." + this.mFuncName;
-        console.log(command, this.mArguments);
-        // console.log(myGame.mCurDialog);
-        eval(command)(myGame, this.mArguments);
-        // this.executeFunctionByName(command, this.mArguments);
-        // this.executeFunctionByName(this.mFuncName, this.mArguments);
+        for (let i = 0; i < this.mFuncName.length; i++) {
+            let command = "this." + this.mFuncName[i];
+            eval(command)(myGame, this.mArguments[i]);
+        }
     }
 
     setCurDialog(myGame, arg) {
@@ -64,7 +69,6 @@ class Option {
     modifyPropertyByName(myGame, arg) {
         console.log(arg);
         let index = myGame.mPropertyAttribute.indexOf(arg[0]);
-        console.log(index);
         myGame.mProperty[index] += arg[1];
     }
 
@@ -99,14 +103,11 @@ class Option {
         this.mTextRenderable.init();
         this.mTextRenderable.setColor([0, 0, 0, 1]);
         this.mTextRenderable.setTextHeight(2);
-        this.mTextRenderable.setPosition(-5, 0);
-        this.mTextRenderable.setLengthLimit(92);
+        let wcWidth = this.mOptionCam.getWCWidth();
+        console.log(wcWidth);
+        this.mTextRenderable.setPosition(0-((wcWidth-4)/2), 0);
+        this.mTextRenderable.setLengthLimit(wcWidth - 4);
         this.mTextRenderable.setPlayInterval(0);
-    }
-
-    setExecute(ex) {
-        this.mFuncName = ex[0];
-        this.mArguments = ex[1];
     }
 
     getCam() {
