@@ -32,6 +32,13 @@ class Option {
         }
     }
 
+    execute(myGame) {
+        for (let i = 0; i < this.mFuncName.length; i++) {
+            let command = "this." + this.mFuncName[i];
+            eval(command)(myGame, this.mArguments[i]);
+        }
+    }
+
     draw() {
         if (this.mAllowedClicked > 0) {
             this.mOptionCam.setViewAndCameraMatrix();
@@ -39,6 +46,7 @@ class Option {
             this.mTextRenderable.draw(this.mOptionCam);
         }
     }
+    
 
     update(myGame) {
         if(engine.input.isButtonClicked(engine.input.eMouseButton.eLeft)) {
@@ -54,12 +62,6 @@ class Option {
         }
     }
 
-    execute(myGame) {
-        for (let i = 0; i < this.mFuncName.length; i++) {
-            let command = "this." + this.mFuncName[i];
-            eval(command)(myGame, this.mArguments[i]);
-        }
-    }
 
     setCurDialog(myGame, arg) {
         console.log("set current dialog to", arg);
@@ -104,7 +106,6 @@ class Option {
         this.mTextRenderable.setColor([0, 0, 0, 1]);
         this.mTextRenderable.setTextHeight(2);
         let wcWidth = this.mOptionCam.getWCWidth();
-        console.log(wcWidth);
         this.mTextRenderable.setPosition(0-((wcWidth-4)/2), 0);
         this.mTextRenderable.setLengthLimit(wcWidth - 4);
         this.mTextRenderable.setPlayInterval(0);

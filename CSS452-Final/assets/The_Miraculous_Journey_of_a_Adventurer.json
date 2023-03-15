@@ -1,5 +1,20 @@
 {
-    "DialogueSet":
+    "Game": "",
+    "Property": [
+        {
+            "Attribute": "Correct",
+            "Value": 0
+        },
+        {
+            "Attribute": "Wrong",
+            "Value": 0
+        },
+        {
+            "Attribute": "Skip",
+            "Value": 1
+        }
+    ],
+    "SceneSet":
     [
         {
             "LargeBg": "assets/bg_1.png",
